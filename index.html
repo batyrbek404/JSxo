@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Крестики-нолики</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: sans-serif;
+            background: #f5f5f3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: #1a1a1a;
+        }
+
+        .container {
+            background: #fff;
+            border-radius: 16px;
+            border: 1px solid #e0ddd5;
+            padding: 2rem;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 22px;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+        }
+
+        .mode-row {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 1.25rem;
+        }
+
+        .mode-btn {
+            padding: 6px 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background: transparent;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        .mode-btn:hover { background: #f0eff8; }
+        .mode-btn.active { background: #eeedfe; color: #534ab7; border-color: #7f77dd; }
+
+        .score-row {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 1rem;
+        }
+
+        .score-card {
+            background: #f5f5f3;
+            border: 1px solid #e0ddd5;
+            border-radius: 8px;
+            padding: 8px 20px;
+            text-align: center;
+            min-width: 72px;
+            transition: border-color 0.2s;
+        }
+
+        .score-card.active-turn { border-color: #7f77dd; }
+
+        .score-card .label { font-size: 12px; color: #888; margin-bottom: 2px; }
+        .score-card .val   { font-size: 22px; font-weight: 500; }
+        .sc-x .val { color: #534ab7; }
+        .sc-o .val { color: #0f6e56; }
+        .sc-d .val { color: #888; }
+
+        .status {
+            text-align: center;
+            font-size: 15px;
+            color: #555;
+            min-height: 26px;
+            margin-bottom: 0.75rem;
+        }
+
+        .winner-msg { font-size: 18px; font-weight: 500; color: #1a1a1a; }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 8px;
+            margin: 0 auto 1.5rem;
+            width: fit-content;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            background: #f5f5f3;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 44px;
+            font-weight: 400;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.15s, transform 0.1s;
+            user-select: none;
+        }
+
+        .cell:hover:not(.taken) { background: #fff; transform: scale(1.04); }
+        .cell.taken { cursor: default; }
+        .cell.x { color: #534ab7; }
+        .cell.o { color: #0f6e56; }
+        .cell.win { background: #eeedfe; border-color: #7f77dd; }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 8px 20px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background: transparent;
+            color: #1a1a1a;
+            font-size: 14px;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+
+        button:hover { background: #f5f5f3; }
+        button.primary { border-color: #7f77dd; color: #534ab7; }
+        button.primary:hover { background: #eeedfe; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Крестики-нолики</h1>
+
+    <div class="mode-row">
+        <button class="mode-btn" id="btn2p" onclick="setMode('2p')">Два игрока</button>
+        <button class="mode-btn active" id="btnAI" onclick="setMode('ai')">Против ИИ</button>
+    </div>
+
+    <div class="score-row">
+        <div class="score-card sc-x active-turn" id="sc-x">
+            <div class="label">✕ Игрок X</div>
+            <div class="val" id="val-x">0</div>
+        </div>
+        <div class="score-card sc-d">
+            <div class="label">Ничья</div>
+            <div class="val" id="val-d">0</div>
+        </div>
+        <div class="score-card sc-o" id="sc-o">
+            <div class="label" id="o-label">🤖 ИИ (O)</div>
+            <div class="val" id="val-o">0</div>
+        </div>
+    </div>
+
+    <div class="status" id="status">Ход: X</div>
+
+    <div class="board" id="board"></div>
+
+    <div class="btn-row">
+        <button class="primary" onclick="newGame()">Новая игра</button>
+        <button onclick="resetScore()">Сбросить счёт</button>
+    </div>
+</div>
+
+<script>
+    const WINS = [
+        [0,1,2],[3,4,5],[6,7,8],  // строки
+        [0,3,6],[1,4,7],[2,5,8],  // столбцы
+        [0,4,8],[2,4,6]           // диагонали
+    ];
+
+    let board, current, gameOver, mode, scores;
+
+    function init() {
+        board    = Array(9).fill(null);
+        current  = 'X';
+        gameOver = false;
+        mode     = 'ai';
+        scores   = { X: 0, O: 0, D: 0 };
+        render();
+    }
+
+    function setMode(m) {
+        mode = m;
+        document.getElementById('btn2p').className = 'mode-btn' + (m === '2p' ? ' active' : '');
+        document.getElementById('btnAI').className = 'mode-btn' + (m === 'ai' ? ' active' : '');
+        document.getElementById('o-label').textContent = m === 'ai' ? '🤖 ИИ (O)' : '○ Игрок O';
+        newGame();
+    }
+
+    function newGame() {
+        board    = Array(9).fill(null);
+        current  = 'X';
+        gameOver = false;
+        document.getElementById('status').textContent = 'Ход: X';
+        render();
+    }
+
+    function resetScore() {
+        scores = { X: 0, O: 0, D: 0 };
+        updateScore();
+    }
+
+    /* ---------- ход игрока ---------- */
+    function move(i) {
+        if (board[i] || gameOver) return;
+        board[i] = current;
+
+        const w = checkWin(board);
+        if (w) {
+            gameOver = true;
+            scores[current]++;
+            updateScore();
+            const name = current === 'X' ? '✕ Игрок X' : (mode === 'ai' ? '🤖 ИИ' : '○ Игрок O');
+            document.getElementById('status').innerHTML =
+                `<span class="winner-msg">${name} побеждает!</span>`;
+            render();
+            return;
+        }
+
+        if (board.every(v => v)) {
+            gameOver = true;
+            scores.D++;
+            updateScore();
+            document.getElementById('status').textContent = 'Ничья!';
+            render();
+            return;
+        }
+
+        current = current === 'X' ? 'O' : 'X';
+        document.getElementById('status').textContent =
+            `Ход: ${current === 'X' ? '✕ X' : '○ O'}`;
+        render();
+
+        if (mode === 'ai' && current === 'O' && !gameOver) {
+            setTimeout(aiMove, 350);
+        }
+    }
+
+    /* ---------- ИИ (minimax) ---------- */
+    function aiMove() {
+        const best = minimax(board, 'O');
+        move(best.idx);
+    }
+
+    function minimax(b, player, depth = 0) {
+        const w = checkWin(b);
+        if (w === 'O') return { score: 10 - depth };
+        if (w === 'X') return { score: depth - 10 };
+
+        const empty = b.map((v, i) => v ? null : i).filter(v => v !== null);
+        if (!empty.length) return { score: 0 };
+
+        const results = empty.map(i => {
+            const nb = [...b];
+            nb[i] = player;
+            const r = minimax(nb, player === 'O' ? 'X' : 'O', depth + 1);
+            return { idx: i, score: r.score };
+        });
+
+        return player === 'O'
+            ? results.reduce((a, b) => b.score > a.score ? b : a)
+            : results.reduce((a, b) => b.score < a.score ? b : a);
+    }
+
+    /* ---------- вспомогательные ---------- */
+    function checkWin(b) {
+        for (const [a, c, d] of WINS)
+            if (b[a] && b[a] === b[c] && b[c] === b[d]) return b[a];
+        return null;
+    }
+
+    function getWinCombo() {
+        for (const combo of WINS) {
+            const [a, c, d] = combo;
+            if (board[a] && board[a] === board[c] && board[c] === board[d]) return combo;
+        }
+        return null;
+    }
+
+    function render() {
+        const container = document.getElementById('board');
+        container.innerHTML = '';
+        const winCells = getWinCombo() || [];
+
+        board.forEach((v, i) => {
+            const cell = document.createElement('div');
+            cell.className = 'cell'
+                + (v ? ' taken ' + v.toLowerCase() : '')
+                + (winCells.includes(i) ? ' win' : '');
+            cell.textContent = v === 'X' ? '✕' : v === 'O' ? '○' : '';
+            if (!v && !gameOver) cell.onclick = () => move(i);
+            container.appendChild(cell);
+        });
+
+        // подсветка активного игрока
+        document.getElementById('sc-x').className =
+            'score-card sc-x' + (!gameOver && current === 'X' ? ' active-turn' : '');
+        document.getElementById('sc-o').className =
+            'score-card sc-o' + (!gameOver && current === 'O' ? ' active-turn' : '');
+    }
+
+    function updateScore() {
+        document.getElementById('val-x').textContent = scores.X;
+        document.getElementById('val-o').textContent = scores.O;
+        document.getElementById('val-d').textContent = scores.D;
+    }
+
+    init();
+</script>
+</body>
+</html>
