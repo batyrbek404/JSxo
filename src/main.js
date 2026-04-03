@@ -16,7 +16,7 @@ let board, current, gameOver, mode, scores, history, moveCount;
 let prevBoard = Array(9).fill(null);
 
 /* ═══════════════════════════════════
-   localStorage
+   локальное хранилище
 ═══════════════════════════════════ */
 function loadStorage() {
     try { scores  = JSON.parse(localStorage.getItem(LS_SCORES))  || { X:0, O:0, D:0 }; }

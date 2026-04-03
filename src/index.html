@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Крестики-нолики</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="page">
+    <div class="container">
+        <canvas id="confetti-canvas"></canvas>
+
+        <h1>Крестики-нолики</h1>
+
+        <div class="mode-row">
+            <button class="mode-btn" id="btn2p" onclick="setMode('2p')">Два игрока</button>
+            <button class="mode-btn active" id="btnAI" onclick="setMode('ai')">Против ИИ</button>
+        </div>
+
+        <div class="score-row">
+            <div class="score-card sc-x active-turn" id="sc-x">
+                <div class="label">✕ Игрок X</div>
+                <div class="val" id="val-x">0</div>
+            </div>
+            <div class="score-card sc-d">
+                <div class="label">Ничья</div>
+                <div class="val" id="val-d">0</div>
+            </div>
+            <div class="score-card sc-o" id="sc-o">
+                <div class="label" id="o-label">🤖 ИИ (O)</div>
+                <div class="val" id="val-o">0</div>
+            </div>
+        </div>
+
+        <div class="status" id="status">Ход: X</div>
+        <div class="board" id="board"></div>
+
+        <div class="btn-row">
+            <button class="primary" onclick="newGame()">Новая игра</button>
+            <button onclick="resetAll()">Сбросить всё</button>
+        </div>
+    </div>
+
+    <div class="history-panel">
+        <h2>История партий</h2>
+        <div id="history-body"><p class="history-empty">Партий ещё не было</p></div>
+    </div>
+</div>
+
+<script src="main.js"></script>
+</body>
+</html>
