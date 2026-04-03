@@ -22,3 +22,48 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+# Дополнительно для JetBrains
+.idea/httpRequests
+.idea/shelf
+.idea/workspace.xml
+.idea/dictionaries
+# Системные файлы Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+# Секретные переменные окружения
+.env
+.env.production
+.env.development
+*.pem
+# Папки сборки и кэш
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+coverage/
+# --- Дополнительно ---
+
+# Безопасность
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# JetBrains (WebStorm) уточнение
+*.iws
+out/
+
+# Тесты и покрытие
+coverage/
+*.lcov
+
+# Системный мусор
+Thumbs.db
+Desktop.ini
+
+# Кэш инструментов
+.eslintcache
+.stylelintcache
+.vite
