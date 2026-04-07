@@ -1,6 +1,5 @@
-/* ═══════════════════════════════════
-   Константы
-═══════════════════════════════════ */
+//  Константы
+
 const WINS = [
     [0,1,2],[3,4,5],[6,7,8],
     [0,3,6],[1,4,7],[2,5,8],
@@ -9,15 +8,14 @@ const WINS = [
 const LS_SCORES  = 'ttt_scores';
 const LS_HISTORY = 'ttt_history';
 
-/* ═══════════════════════════════════
-   Состояние
-═══════════════════════════════════ */
+//   Состояние
+
 let board, current, gameOver, mode, scores, history, moveCount;
 let prevBoard = Array(9).fill(null);
 
-/* ═══════════════════════════════════
-   локальное хранилище
-═══════════════════════════════════ */
+
+//   Локальное хранилище
+
 function loadStorage() {
     try { scores  = JSON.parse(localStorage.getItem(LS_SCORES))  || { X:0, O:0, D:0 }; }
     catch { scores = { X:0, O:0, D:0 }; }
@@ -31,9 +29,9 @@ function saveStorage() {
     localStorage.setItem(LS_HISTORY, JSON.stringify(history));
 }
 
-/* ═══════════════════════════════════
-   Инициализация
-═══════════════════════════════════ */
+
+//   Инициализация
+
 function init() {
     loadStorage();
     mode      = 'ai';
@@ -74,9 +72,9 @@ function resetAll() {
     newGame();
 }
 
-/* ═══════════════════════════════════
-   Логика хода
-═══════════════════════════════════ */
+
+//   Логика хода
+
 function move(i) {
     if (board[i] || gameOver) return;
     board[i] = current;
@@ -124,9 +122,9 @@ function move(i) {
         setTimeout(aiMove, 350);
 }
 
-/* ═══════════════════════════════════
-   ИИ — minimax
-═══════════════════════════════════ */
+
+//   ИИ — minimax
+
 function aiMove() {
     const best = minimax(board, 'O');
     move(best.idx);
@@ -148,9 +146,8 @@ function minimax(b, player, depth = 0) {
         : results.reduce((a,b) => b.score < a.score ? b : a);
 }
 
-/* ═══════════════════════════════════
-   Вспомогательные
-═══════════════════════════════════ */
+//   Вспомогательные
+
 function checkWin(b) {
     for (const [a,c,d] of WINS)
         if (b[a] && b[a] === b[c] && b[c] === b[d]) return b[a];
@@ -164,9 +161,9 @@ function getWinCombo() {
     return null;
 }
 
-/* ═══════════════════════════════════
-   Рендер доски
-═══════════════════════════════════ */
+
+//   Рендер доски
+
 function buildBoard() {
     const container = document.getElementById('board');
     container.innerHTML = '';
@@ -225,9 +222,8 @@ function updateScore() {
     document.getElementById('val-d').textContent = scores.D;
 }
 
-/* ═══════════════════════════════════
-   История партий
-═══════════════════════════════════ */
+//   История партий
+
 function addHistory(type, label, moves) {
     history.unshift({ type, label, moves });
     if (history.length > 20) history.pop();
@@ -261,9 +257,7 @@ function plural(n) {
     return 'ов';
 }
 
-/* ═══════════════════════════════════
-   Конфетти (Canvas API)
-═══════════════════════════════════ */
+//Конфетти (Canvas API)
 let confettiAnim = null;
 
 function launchConfetti(winner) {

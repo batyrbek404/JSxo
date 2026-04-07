@@ -46,7 +46,7 @@ h1 {
     margin-bottom: 1.5rem;
 }
 
-/* ── кнопки режима ── */
+/* кнопки режима */
 .mode-row {
     display: flex;
     gap: 8px;
@@ -65,7 +65,7 @@ h1 {
 .mode-btn:hover  { background: #f0eff8; }
 .mode-btn.active { background: #eeedfe; color: #534ab7; border-color: #7f77dd; }
 
-/* ── карточки для крестика/нолика ── */
+/* карточки для крестика/нолика */
 .score-row {
     display: flex;
     justify-content: center;
@@ -88,7 +88,7 @@ h1 {
 .sc-o .val { color: #0f6e56; }
 .sc-d .val { color: #888; }
 
-/* ── статус ── */
+/* статус */
 .status {
     text-align: center;
     font-size: 15px;
@@ -98,7 +98,7 @@ h1 {
 }
 .winner-msg { font-size: 18px; font-weight: 500; color: #1a1a1a; }
 
-/* ── Доска ── */
+/* Доска */
 .board {
     display: grid;
     grid-template-columns: repeat(3, 100px);
@@ -128,7 +128,7 @@ h1 {
 .cell.o     { color: #0f6e56; }
 .cell.win   { background: #eeedfe; border-color: #7f77dd; }
 
-/* ── Анимация появления символа ── */
+/* Анимация появления символа */
 @keyframes pop-in {
     0%   { opacity: 0; transform: scale(0.15) rotate(-20deg); }
     55%  { opacity: 1; transform: scale(1.22) rotate(5deg);   }
@@ -140,7 +140,7 @@ h1 {
     animation: pop-in 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
-/* ── Кнопки ── */
+/* Кнопки */
 .btn-row { display: flex; gap: 10px; justify-content: center; }
 button {
     padding: 8px 20px;
@@ -156,7 +156,7 @@ button:hover { background: #f5f5f3; }
 button.primary { border-color: #7f77dd; color: #534ab7; }
 button.primary:hover { background: #eeedfe; }
 
-/* ── история партий ── */
+/* история партий */
 .history-panel {
     flex: 1;
     background: #fff;
